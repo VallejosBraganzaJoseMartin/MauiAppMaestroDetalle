@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiAppMaestroDetalle.NuevoPedidoPage"
+             BackgroundColor="{StaticResource PageBackground}"
+             Shell.NavBarIsVisible="False"
+             Title="Nuevo Pedido">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- HEADER                                              -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <Grid Grid.Row="0"
+              BackgroundColor="{StaticResource Primary}"
+              Padding="16,12"
+              ColumnDefinitions="Auto,*,Auto">
+
+            <!-- Back Button -->
+            <Button Grid.Column="0"
+                    Text="← Volver"
+                    FontSize="14"
+                    TextColor="White"
+                    BackgroundColor="Transparent"
+                    VerticalOptions="Center"
+                    Clicked="OnVolverClicked" />
+
+            <!-- Title -->
+            <Label Grid.Column="1"
+                   Text="📦 Nuevo Pedido"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Grid>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- BODY: Scrollable content                            -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <ScrollView Grid.Row="1" Padding="12,8">
+            <VerticalStackLayout Spacing="12">
+
+                <!-- ─── Cliente ─── -->
+                <Border BackgroundColor="White" Stroke="{StaticResource Gray200}" Padding="14,10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="👤 Nombre del Cliente"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="Black" />
+                        <Border Stroke="{StaticResource Gray200}" Padding="4,0" BackgroundColor="{StaticResource SearchBarBackground}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <Entry x:Name="txtCliente"
+                                   Placeholder="Ej: Juan Pérez"
+                                   FontSize="15"
+                                   TextColor="Black"
+                                   BackgroundColor="Transparent" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ─── Catálogo de Productos ─── -->
+                <Border BackgroundColor="White" Stroke="{StaticResource Gray200}" Padding="14,10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="🛍️ Seleccionar Productos"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="Black" />
+
+                        <!-- Search within catalog -->
+                        <Border Stroke="{StaticResource Gray200}" Padding="4,0" BackgroundColor="{StaticResource SearchBarBackground}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <Grid ColumnDefinitions="Auto,*" Padding="8,0">
+                                <Label Grid.Column="0" Text="🔍" FontSize="14" VerticalOptions="Center" Margin="0,0,6,0" />
+                                <Entry x:Name="txtBuscarProducto"
+                                       Grid.Column="1"
+                                       Placeholder="Buscar en catálogo..."
+                                       PlaceholderColor="{StaticResource Gray400}"
+                                       FontSize="14"
+                                       TextColor="Black"
+                                       BackgroundColor="Transparent"
+                                       TextChanged="OnBuscarProductoCatalogo" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Product catalog list -->
+                        <CollectionView x:Name="cvCatalogo"
+                                        SelectionMode="None"
+                                        HeightRequest="260">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="0,3" Stroke="{StaticResource Gray100}" Padding="10,8" BackgroundColor="White">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="10" />
+                                        </Border.StrokeShape>
+                                        <Grid ColumnDefinitions="50,*,Auto" ColumnSpacing="10">
+
+                                            <!-- Thumbnail -->
+                                            <Border Grid.Column="0" StrokeShape="RoundRectangle 8" Stroke="Transparent"
+                                                    BackgroundColor="{StaticResource SearchBarBackground}"
+                                                    WidthRequest="50" HeightRequest="50">
+                                                <Image Source="{Binding ImgUrl}" Aspect="AspectFill"
+                                                       WidthRequest="50" HeightRequest="50" />
+                                            </Border>
+
+                                            <!-- Name + Price + Stock -->
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                                <Label Text="{Binding Nombre}"
+                                                       FontSize="13"
+                                                       FontAttributes="Bold"
+                                                       TextColor="Black"
+                                                       LineBreakMode="TailTruncation" />
+                                                <HorizontalStackLayout Spacing="10">
+                                                    <Label Text="{Binding Precio, StringFormat='${0:F2}'}"
+                                                           FontSize="13"
+                                                           FontAttributes="Bold"
+                                                           TextColor="{StaticResource PriceColor}" />
+                                                    <Label Text="{Binding Stock, StringFormat='Stock: {0}'}"
+                                                           FontSize="11"
+                                                           TextColor="{StaticResource SubtleText}"
+                                                           VerticalOptions="Center" />
+                                                </HorizontalStackLayout>
+                                            </VerticalStackLayout>
+
+                                            <!-- Add button -->
+                                            <Button Grid.Column="2"
+                                                    Text="＋"
+                                                    FontSize="18"
+                                                    FontAttributes="Bold"
+                                                    TextColor="White"
+                                                    BackgroundColor="{StaticResource Primary}"
+                                                    CornerRadius="20"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    Padding="0"
+                                                    VerticalOptions="Center"
+                                                    Clicked="OnAgregarProductoAlPedido"
+                                                    CommandParameter="{Binding .}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ─── Detalle del Pedido Actual ─── -->
+                <Border BackgroundColor="White" Stroke="{StaticResource Gray200}" Padding="14,10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0"
+                                   Text="📋 Detalle del Pedido"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="Black" />
+                            <Label x:Name="lblItemCount"
+                                   Grid.Column="1"
+                                   Text="0 items"
+                                   FontSize="12"
+                                   TextColor="{StaticResource SubtleText}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+
+                        <!-- Order detail items -->
+                        <CollectionView x:Name="cvDetalles"
+                                        SelectionMode="None"
+                                        EmptyView="Aún no has agregado productos al pedido."
+                                        HeightRequest="220">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <SwipeView>
+                                        <SwipeView.RightItems>
+                                            <SwipeItems Mode="Execute">
+                                                <SwipeItem Text="Quitar"
+                                                           BackgroundColor="{StaticResource DangerColor}"
+                                                           Invoked="OnQuitarDetalleSwipe" />
+                                            </SwipeItems>
+                                        </SwipeView.RightItems>
+
+                                        <Border Margin="0,3" Stroke="{StaticResource Gray100}" Padding="10,8" BackgroundColor="White">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10" />
+                                            </Border.StrokeShape>
+                                            <Grid ColumnDefinitions="50,*,Auto,Auto" ColumnSpacing="8">
+
+                                                <!-- Thumbnail -->
+                                                <Border Grid.Column="0" StrokeShape="RoundRectangle 8" Stroke="Transparent"
+                                                        BackgroundColor="{StaticResource SearchBarBackground}"
+                                                        WidthRequest="50" HeightRequest="50">
+                                                    <Image Source="{Binding ImgUrl}" Aspect="AspectFill"
+                                                           WidthRequest="50" HeightRequest="50" />
+                                                </Border>
+
+                                                <!-- Product info -->
+                                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                                    <Label Text="{Binding NombreProducto}"
+                                                           FontSize="13"
+                                                           FontAttributes="Bold"
+                                                           TextColor="Black"
+                                                           LineBreakMode="TailTruncation" />
+                                                    <HorizontalStackLayout Spacing="6">
+                                                        <Label Text="{Binding PrecioUnitario, StringFormat='${0:F2}'}"
+                                                               FontSize="12"
+                                                               TextColor="{StaticResource SubtleText}" />
+                                                        <Label Text="{Binding Cantidad, StringFormat='×{0}'}"
+                                                               FontSize="12"
+                                                               FontAttributes="Bold"
+                                                               TextColor="Black" />
+                                                    </HorizontalStackLayout>
+                                                </VerticalStackLayout>
+
+                                                <!-- Subtotal -->
+                                                <Label Grid.Column="2"
+                                                       Text="{Binding Subtotal, StringFormat='${0:F2}'}"
+                                                       FontSize="14"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{StaticResource PriceColor}"
+                                                       VerticalOptions="Center" />
+
+                                                <!-- Remove button -->
+                                                <Button Grid.Column="3"
+                                                        Text="✕"
+                                                        FontSize="14"
+                                                        TextColor="{StaticResource DangerColor}"
+                                                        BackgroundColor="Transparent"
+                                                        WidthRequest="36"
+                                                        HeightRequest="36"
+                                                        Padding="0"
+                                                        VerticalOptions="Center"
+                                                        Clicked="OnQuitarDetalleClicked"
+                                                        CommandParameter="{Binding .}" />
+                                            </Grid>
+                                        </Border>
+                                    </SwipeView>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- FOOTER: Total + Save Button                         -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <Border Grid.Row="2" BackgroundColor="White" Stroke="{StaticResource Gray200}"
+                StrokeThickness="1" Padding="16,12">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="16,16,0,0" />
+            </Border.StrokeShape>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <!-- Total display -->
+                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                    <Label Text="Total del Pedido"
+                           FontSize="12"
+                           TextColor="{StaticResource SubtleText}" />
+                    <Label x:Name="lblTotal"
+                           Text="$0.00"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource PriceColor}" />
+                </VerticalStackLayout>
+
+                <!-- Confirm order button -->
+                <Button Grid.Column="1"
+                        Text="✓ Confirmar Pedido"
+                        FontSize="15"
+                        FontAttributes="Bold"
+                        TextColor="White"
+                        BackgroundColor="{StaticResource Primary}"
+                        CornerRadius="14"
+                        HeightRequest="52"
+                        VerticalOptions="Center"
+                        Clicked="OnConfirmarPedido" />
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>
